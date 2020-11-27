@@ -62,6 +62,7 @@ int main(int argc,char **argv)
 		}
 
 		if ( nfds == 0 ) {
+#if 0
 			struct canfd_frame frame;   //发送帧
 			frame.can_id = 0x2;
 			frame.len = 64;
@@ -72,6 +73,7 @@ int main(int argc,char **argv)
 			int len = write(canfd.socket_can, &frame, sizeof(struct canfd_frame));
 			std::cout << "\033[34m[" << "Write " << len << " bytes ]\033[39m" << std::endl;
 			//canfd.Write(uint8_t*(&frame), sizeof(struct canfd_frame));
+#endif
 		}
 
 		for (int i = 0; i < nfds; i++ ) {
@@ -80,10 +82,12 @@ int main(int argc,char **argv)
 					int len = read(rfd, buf, BUF_SIZE);
 					if(rfd == canfd.socket_can) {
 						std::cout << "canfd:" << len << std::endl;
+#if 0
 						for(int i = 0; i < len; i++) {
 							printf("%x ", buf[i]);
 						}
 						printf("\n");
+#endif
 					}
 			}
 		}
