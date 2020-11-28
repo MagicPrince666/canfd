@@ -94,12 +94,12 @@ inline void ResponseToclo(int can_fd) {
 
     memcpy(frame[0].data, &xxxag, 16);
     memset(frame[1].data, 0 , 16);
-    memcpy(frame[1].data, &xxxag + 16, 8);
+    //memcpy(frame[1].data, &xxxag + 16, 8);
 
     int len = write(can_fd, &frame[0], sizeof(struct canfd_frame));
-    std::cout << "\033[34m[" << ".clud Write " << len << " bytes ]\033[39m" << std::endl;
+    //std::cout << "\033[34m[" << ".clud Write " << len << " bytes ]\033[39m" << std::endl;
     len = write(can_fd, &frame[1], sizeof(struct canfd_frame));
-    std::cout << "\033[34m[" << ".clud Write " << len << " bytes ]\033[39m" << std::endl;
+    //std::cout << "\033[34m[" << ".clud Write " << len << " bytes ]\033[39m" << std::endl;
 }
 
 int main(int argc,char **argv)
@@ -148,13 +148,16 @@ int main(int argc,char **argv)
 			int rfd = events[i].data.fd; //准确获取哪个事件的描述符
 			if ( events[i].events & EPOLLIN ) {
 					int len = read(rfd, buf, BUF_SIZE);
+
 					if(rfd == canfd.socket_can) {
+
                         frame = (struct canfd_frame *)buf;
                         data = (uint32_t *) (frame->data);
+
                         if(*data == 0x01015b5b) {
                             ResponseTo(canfd.socket_can);
                         } else {
-                            std::cout << "canfd:" << len << std::endl;
+                            //std::cout << "canfd:" << len << std::endl;
 #if 0
                             for(int i = 0; i < len; i++) {
                                 printf("%x ", buf[i]);

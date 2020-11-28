@@ -1,4 +1,4 @@
-CXX = aarch64-openwrt-linux-g++
+CXX = arm-f1c200s-linux-gnueabi-g++
 TARGET	= canfd
 
 DIR		= . 

@@ -18,7 +18,7 @@ int setnonblocking( int fd )
 int epoll_add(int fd)
 {
 	ev.data.fd = fd;
-	ev.events = EPOLLIN | EPOLLET;
+	ev.events = EPOLLIN ;
 	epoll_ctl( epfd, EPOLL_CTL_ADD, fd, &ev );
 	return 0;
 }
