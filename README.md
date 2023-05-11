@@ -2,8 +2,8 @@
 
 ## 设置波特率
 ```
-ip link set can0 type can bitrate 500000
-ip link set can0 up
+sudo ip link set can0 down
+sudo ip link set up can0 type can bitrate 500000
 ```
 ## 发送数据
 ```
