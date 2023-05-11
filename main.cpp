@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <bitset>
 #include <errno.h>
-#include <execinfo.h>
 #include <fcntl.h> /*file control*/
 #include <iostream>
 #include <linux/input.h>
