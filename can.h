@@ -1,5 +1,5 @@
-#ifndef __CAN_H__
-#define __CAN_H__
+#ifndef __SOCKET_CAN_H__
+#define __SOCKET_CAN_H__
 
 #include <net/if.h>
 #include <sys/ioctl.h>

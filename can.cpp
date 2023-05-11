@@ -30,12 +30,12 @@ SocketCan::~SocketCan(void)
 bool SocketCan::Init()
 {
     struct sockaddr_can addr;
-    struct canfd_frame frame;
+    struct can_frame frame;
     struct ifreq ifr;
     int required_mtu;
     int mtu;
 
-    required_mtu = sizeof(struct canfd_frame);
+    required_mtu = sizeof(struct can_frame);
 
     /* open socket */
     if ((socket_can_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
