@@ -9,22 +9,20 @@
 #include <linux/can/raw.h>
 #include <inttypes.h>
 
+#include <iostream>
+
 class Can
 {
 public:
-    Can();
+    Can(std::string dev);
     ~Can();
+    bool Init();
     int Read(uint8_t* buf, int len);
     int Write(uint8_t* buf, int len);
-    int socket_can; /* can raw socket */ 
 
 private:
-    
-	struct sockaddr_can addr;
-	struct canfd_frame frame;
-	struct ifreq ifr;
-    int required_mtu;
-    int mtu;
+    std::string can_dev_;
+    int socket_can_; /* can raw socket */ 
 };
 
 #endif

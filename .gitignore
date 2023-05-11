@@ -1,4 +1,6 @@
 *.o
 .idea/
+.vscode/
+build/
 .DS_Store
 canfd
