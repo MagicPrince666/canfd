@@ -1,33 +1,35 @@
 #include <assert.h>
+#include <iostream>
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <net/if.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <linux/can.h>
-#include <linux/can/raw.h>
+#include <unistd.h>
 
 #include "can.h"
+#include "epoll.h"
 
-#include <iostream>
-
-#define CAN_DEVICE "can0"
-
-Can::Can(std::string dev) : can_dev_(dev)
+SocketCan::SocketCan(std::string dev)
+    : can_dev_(dev),
+      rx_ring_buffer_(1024)
 {
-	socket_can_ = -1;
+    socket_can_ = -1;
 }
 
-Can::~Can(void)
+SocketCan::~SocketCan(void)
 {
-    close(socket_can_);
+    if (socket_can_ > 0) {
+        close(socket_can_);
+    }
 }
 
-bool Can::Init()
+bool SocketCan::Init()
 {
-	struct sockaddr_can addr;
+    struct sockaddr_can addr;
     struct canfd_frame frame;
     struct ifreq ifr;
     int required_mtu;
@@ -38,7 +40,7 @@ bool Can::Init()
     /* open socket */
     if ((socket_can_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
         perror("socket");
-		return false;
+        return false;
     }
 
     strncpy(ifr.ifr_name, can_dev_.c_str(), IFNAMSIZ - 1);
@@ -85,15 +87,31 @@ bool Can::Init()
         perror("bind");
         return false;
     }
-	return true;
+    MY_EPOLL.EpollAdd(socket_can_, std::bind(&SocketCan::ReadCallback, this));
+    return true;
 }
 
-int Can::Read(uint8_t *buf, int len)
+int SocketCan::ReadCallback()
 {
-    return read(socket_can_, buf, len);
+    uint8_t buf[64];
+    int len = read(socket_can_, buf, sizeof(buf));
+	if(len > 0) {
+		rx_ring_buffer_.RingBufferIn(buf, len);
+	}
+    return len;
 }
 
-int Can::Write(uint8_t *buf, int len)
+int SocketCan::ReadBuffer(uint8_t *buf, const int len)
 {
-    return write(socket_can_, buf, len);
+    return rx_ring_buffer_.RingBufferOut(buf, len);
+}
+
+int SocketCan::SendBuffer(uint8_t *buf, const int len)
+{
+	struct can_frame frame;   //发送帧
+    memset(&frame, 0 , sizeof(struct can_frame));
+    frame.can_id = 0x2;
+    frame.len = len;
+	memcpy(frame.data, buf, len);
+    return write(socket_can_, &frame, sizeof(struct can_frame));
 }

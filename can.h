@@ -11,18 +11,23 @@
 
 #include <iostream>
 
-class Can
+#include "ring_buffer.h"
+
+class SocketCan
 {
 public:
-    Can(std::string dev);
-    ~Can();
+    SocketCan(std::string dev = "can0");
+    ~SocketCan();
+
     bool Init();
-    int Read(uint8_t* buf, int len);
-    int Write(uint8_t* buf, int len);
+    int ReadBuffer(uint8_t* buf, const int len);
+    int SendBuffer(uint8_t* buf, const int len);
 
 private:
+    int ReadCallback();
     std::string can_dev_;
-    int socket_can_; /* can raw socket */ 
+    int socket_can_;
+    RingBuffer rx_ring_buffer_; // 接收缓存队列
 };
 
 #endif
